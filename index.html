@@ -3,13 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>QR Code Generator — Professional</title>
+  <title>QR Code Generator — Professional + Print</title>
   <meta name="color-scheme" content="dark light">
   <style>
     /* ===== CSS Reset (minimal) ===== */
     *, *::before, *::after { box-sizing: border-box; }
     html, body { height: 100%; }
     body { margin: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; }
+    :root { --print-size: 3in; } /* default physical size for printing */
 
     /* ===== Professional Theme Tokens ===== */
     :root {
@@ -62,384 +63,89 @@
     }
 
     /* ===== Background ===== */
-    .backdrop {
-      position: fixed; 
-      inset: 0; 
-      background: linear-gradient(135deg, var(--bg) 0%, var(--bg-secondary) 100%);
-      z-index: -1;
-    }
-    
+    .backdrop { position: fixed; inset: 0; background: linear-gradient(135deg, var(--bg) 0%, var(--bg-secondary) 100%); z-index: -1; }
     .backdrop::before {
-      content: '';
-      position: absolute;
-      inset: 0;
+      content: ''; position: absolute; inset: 0;
       background: 
         radial-gradient(circle at 20% 50%, rgba(79, 70, 229, 0.03) 0%, transparent 50%),
         radial-gradient(circle at 80% 20%, rgba(79, 70, 229, 0.02) 0%, transparent 50%);
     }
 
     /* ===== Layout ===== */
-    .container {
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 1.5rem;
-    }
-    
-    .main-card {
-      width: 100%;
-      max-width: 1200px;
-      background: var(--bg-secondary);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-lg);
-      overflow: hidden;
-    }
+    .container { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 1.5rem; }
+    .main-card { width: 100%; max-width: 1200px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); overflow: hidden; }
 
     /* ===== Header ===== */
-    .header {
-      padding: 2rem;
-      border-bottom: 1px solid var(--border);
-      background: var(--bg-tertiary);
-    }
-    
-    .header-content {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-    }
-    
-    .logo {
-      width: 48px;
-      height: 48px;
-      background: var(--accent);
-      border-radius: var(--radius);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      overflow: hidden;
-    }
-    
-    .logo::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 100%);
-    }
-    
-    .logo-icon {
-      width: 24px;
-      height: 24px;
-      stroke: white;
-      stroke-width: 2;
-      fill: none;
-    }
-    
-    .header-text h1 {
-      margin: 0;
-      font-size: 1.875rem;
-      font-weight: 700;
-      color: var(--text-primary);
-      letter-spacing: -0.025em;
-    }
-    
-    .header-text p {
-      margin: 0.25rem 0 0;
-      color: var(--text-secondary);
-      font-size: 0.875rem;
-    }
+    .header { padding: 2rem; border-bottom: 1px solid var(--border); background: var(--bg-tertiary); }
+    .header-content { display: flex; align-items: center; gap: 1rem; }
+    .logo { width: 48px; height: 48px; background: var(--accent); border-radius: var(--radius); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+    .logo::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 100%); }
+    .logo-icon { width: 24px; height: 24px; stroke: white; stroke-width: 2; fill: none; }
+    .header-text h1 { margin: 0; font-size: 1.875rem; font-weight: 700; color: var(--text-primary); letter-spacing: -0.025em; }
+    .header-text p { margin: 0.25rem 0 0; color: var(--text-secondary); font-size: 0.875rem; }
 
     /* ===== Content Grid ===== */
-    .content {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      min-height: 600px;
-    }
-    
-    @media (max-width: 968px) {
-      .content {
-        grid-template-columns: 1fr;
-      }
-    }
+    .content { display: grid; grid-template-columns: 1fr 1fr; min-height: 600px; }
+    @media (max-width: 968px) { .content { grid-template-columns: 1fr; } }
 
     /* ===== Controls Panel ===== */
-    .controls {
-      padding: 2rem;
-      border-right: 1px solid var(--border);
-      background: var(--bg-secondary);
-    }
-    
-    @media (max-width: 968px) {
-      .controls {
-        border-right: none;
-        border-bottom: 1px solid var(--border);
-      }
-    }
-    
-    .form-group {
-      margin-bottom: 1.5rem;
-    }
-    
-    .form-group:last-child {
-      margin-bottom: 0;
-    }
-    
-    label {
-      display: block;
-      margin-bottom: 0.5rem;
-      font-size: 0.875rem;
-      font-weight: 500;
-      color: var(--text-secondary);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-    
-    .input, select {
-      width: 100%;
-      padding: 0.75rem 1rem;
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      background: var(--surface);
-      color: var(--text-primary);
-      font-size: 0.875rem;
-      transition: all 0.2s ease;
-      outline: none;
-    }
-    
-    .input:hover, select:hover {
-      border-color: var(--border-hover);
-      background: var(--surface-hover);
-    }
-    
-    .input:focus, select:focus {
-      border-color: var(--accent);
-      box-shadow: var(--focus);
-      background: var(--surface-hover);
-    }
-    
-    .input-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1rem;
-    }
-    
-    @media (max-width: 640px) {
-      .input-row {
-        grid-template-columns: 1fr;
-      }
-    }
+    .controls { padding: 2rem; border-right: 1px solid var(--border); background: var(--bg-secondary); }
+    @media (max-width: 968px) { .controls { border-right: none; border-bottom: 1px solid var(--border); } }
+    .form-group { margin-bottom: 1.5rem; }
+    .form-group:last-child { margin-bottom: 0; }
+    label { display: block; margin-bottom: 0.5rem; font-size: 0.875rem; font-weight: 500; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; }
+    .input, select { width: 100%; padding: 0.75rem 1rem; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); color: var(--text-primary); font-size: 0.875rem; transition: all 0.2s ease; outline: none; }
+    .input:hover, select:hover { border-color: var(--border-hover); background: var(--surface-hover); }
+    .input:focus, select:focus { border-color: var(--accent); box-shadow: var(--focus); background: var(--surface-hover); }
+    .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    @media (max-width: 640px) { .input-row { grid-template-columns: 1fr; } }
 
     /* ===== Quick Options ===== */
-    .quick-options {
-      margin-top: 0.75rem;
-    }
-    
-    .option-chips {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-    }
-    
-    .chip {
-      padding: 0.5rem 0.75rem;
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      background: var(--surface);
-      color: var(--text-muted);
-      font-size: 0.75rem;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-    
-    .chip:hover {
-      border-color: var(--accent);
-      color: var(--accent);
-      background: var(--accent-muted);
-    }
+    .quick-options { margin-top: 0.75rem; }
+    .option-chips { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .chip { padding: 0.5rem 0.75rem; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); color: var(--text-muted); font-size: 0.75rem; cursor: pointer; transition: all 0.2s ease; }
+    .chip:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-muted); }
 
     /* ===== Buttons ===== */
-    .button-group {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.75rem;
-      margin-top: 1.5rem;
-    }
-    
-    .button-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.75rem;
-      margin-top: 0.75rem;
-    }
-    
-    .btn {
-      padding: 0.75rem 1rem;
-      border: none;
-      border-radius: var(--radius);
-      font-size: 0.875rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-      text-decoration: none;
-    }
-    
-    .btn-primary {
-      background: var(--accent);
-      color: white;
-      box-shadow: var(--shadow-sm);
-    }
-    
-    .btn-primary:hover {
-      background: var(--accent-hover);
-      box-shadow: var(--shadow-md);
-    }
-    
-    .btn-secondary {
-      background: var(--surface);
-      color: var(--text-primary);
-      border: 1px solid var(--border);
-    }
-    
-    .btn-secondary:hover {
-      background: var(--surface-hover);
-      border-color: var(--border-hover);
-    }
-    
-    .btn-ghost {
-      background: transparent;
-      color: var(--text-secondary);
-      border: 1px dashed var(--border);
-    }
-    
-    .btn-ghost:hover {
-      color: var(--text-primary);
-      border-color: var(--border-hover);
-      background: var(--surface);
-    }
+    .button-group { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-top: 1.5rem; }
+    .button-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-top: 0.75rem; }
+    .btn { padding: 0.75rem 1rem; border: none; border-radius: var(--radius); font-size: 0.875rem; font-weight: 500; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; justify-content: center; gap: 0.5rem; text-decoration: none; }
+    .btn-primary { background: var(--accent); color: white; box-shadow: var(--shadow-sm); }
+    .btn-primary:hover { background: var(--accent-hover); box-shadow: var(--shadow-md); }
+    .btn-secondary { background: var(--surface); color: var(--text-primary); border: 1px solid var(--border); }
+    .btn-secondary:hover { background: var(--surface-hover); border-color: var(--border-hover); }
+    .btn-ghost { background: transparent; color: var(--text-secondary); border: 1px dashed var(--border); }
+    .btn-ghost:hover { color: var(--text-primary); border-color: var(--border-hover); background: var(--surface); }
 
     /* ===== Preview Area ===== */
-    .preview {
-      padding: 2rem;
-      background: var(--bg-tertiary);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-    }
-    
-    .preview-content {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 2rem;
-      box-shadow: var(--shadow-md);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 400px;
-      width: 100%;
-      max-width: 500px;
-    }
-    
-    #qrcode {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    
-    #qrcode canvas, 
-    #qrcode img {
-      width: 100% !important;
-      height: auto !important;
-      max-width: 320px;
-      border-radius: var(--radius);
-      box-shadow: var(--shadow-md);
-    }
+    .preview { padding: 2rem; background: var(--bg-tertiary); display: flex; align-items: center; justify-content: center; position: relative; }
+    .preview-content { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 2rem; box-shadow: var(--shadow-md); display: flex; align-items: center; justify-content: center; min-height: 400px; width: 100%; max-width: 500px; }
+    #qrcode { display: flex; align-items: center; justify-content: center; }
+    #qrcode canvas, #qrcode img { width: 100% !important; height: auto !important; max-width: 320px; border-radius: var(--radius); box-shadow: var(--shadow-md); }
 
     /* ===== Footer ===== */
-    .footer {
-      padding: 1.5rem 2rem;
-      border-top: 1px solid var(--border);
-      background: var(--bg-tertiary);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 1rem;
-    }
-    
-    .footer-badge {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.5rem 0.75rem;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      font-size: 0.75rem;
-      color: var(--text-secondary);
-    }
-    
-    .footer-links {
-      display: flex;
-      gap: 1rem;
-      flex-wrap: wrap;
-    }
-    
-    .status-indicator {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--success);
-    }
+    .footer { padding: 1.5rem 2rem; border-top: 1px solid var(--border); background: var(--bg-tertiary); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+    .footer-badge { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 0.75rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); font-size: 0.75rem; color: var(--text-secondary); }
+    .footer-links { display: flex; gap: 1rem; flex-wrap: wrap; }
+    .status-indicator { width: 8px; height: 8px; border-radius: 50%; background: var(--success); }
 
-    /* ===== Utilities ===== */
-    .text-success {
-      color: var(--success);
-    }
-    
-    .sr-only {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
-      overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      white-space: nowrap;
-      border: 0;
-    }
+    .text-success { color: var(--success); }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
 
-    /* ===== Responsive ===== */
-    @media (max-width: 640px) {
-      .container {
-        padding: 1rem;
-      }
-      
-      .header {
-        padding: 1.5rem;
-      }
-      
-      .controls,
-      .preview {
-        padding: 1.5rem;
-      }
-      
-      .button-group,
-      .button-row {
-        grid-template-columns: 1fr;
-      }
-      
-      .footer {
-        padding: 1rem 1.5rem;
-        flex-direction: column;
-        align-items: flex-start;
+    /* ===== PRINT STYLES ===== */
+    @media print {
+      @page { size: auto; margin: 0.5in; }
+      body { background: white !important; }
+      .backdrop, .header, .controls, .footer { display: none !important; }
+      .container, .main-card, .content, .preview { all: unset; }
+      .print-area { display: grid !important; place-items: center; min-height: 100vh; }
+      /* Use the physical size variable for the printed QR */
+      #qrcode canvas, #qrcode img {
+        width: var(--print-size) !important;
+        height: var(--print-size) !important;
+        max-width: none !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
       }
     }
   </style>
@@ -509,6 +215,22 @@
             </div>
           </div>
 
+          <!-- Print controls -->
+          <div class="form-group">
+            <label for="printSize">Print Size <span id="printSizeLabel" style="color:var(--text-muted); margin-left:.25rem;">(3.00 in)</span></label>
+            <input id="printSize" class="input" type="range" min="1" max="8" value="3" step="0.25">
+            <div class="button-row" style="margin-top:.75rem;">
+              <button id="print" class="btn btn-primary">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="6 9 6 2 18 2 18 9"/>
+                  <rect x="6" y="13" width="12" height="8" rx="2"/>
+                </svg>
+                Print
+              </button>
+              <a id="savePdfHint" class="btn btn-secondary" href="javascript:void(0)" title="Tip">Tip: choose 'Save as PDF' in the print dialog</a>
+            </div>
+          </div>
+
           <div class="button-group">
             <button id="generate" class="btn btn-primary">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -546,7 +268,7 @@
         </section>
 
         <!-- Preview Area -->
-        <section class="preview">
+        <section class="preview print-area">
           <div class="preview-content">
             <div id="qrcode" role="img" aria-label="Generated QR code"></div>
           </div>
@@ -559,12 +281,8 @@
           <span>Client-side processing • Privacy protected</span>
         </div>
         <div class="footer-links">
-          <div class="footer-badge">
-            <span>Powered by qrcode.js</span>
-          </div>
-          <div class="footer-badge">
-            <span>Enterprise ready</span>
-          </div>
+          <div class="footer-badge"><span>Powered by qrcode.js</span></div>
+          <div class="footer-badge"><span>Enterprise ready</span></div>
         </div>
       </footer>
     </main>
@@ -586,6 +304,9 @@
     const btnCopy = document.getElementById('copy');
     const btnClear = document.getElementById('clear');
     const chips = document.querySelectorAll('.chip');
+    const printButton = document.getElementById('print');
+    const printSize = document.getElementById('printSize');
+    const printSizeLabel = document.getElementById('printSizeLabel');
 
     let qrcode = null;
 
@@ -643,75 +364,50 @@
       return null;
     }
 
+    // Print size control
+    function updatePrintSizeLabel(val) {
+      printSizeLabel.textContent = `(${Number(val).toFixed(2)} in)`;
+    }
+    function setPrintSize(valInches) {
+      document.documentElement.style.setProperty('--print-size', valInches + 'in');
+      updatePrintSizeLabel(valInches);
+    }
+    setPrintSize(printSize.value);
+
     // Event bindings
     btnGen.addEventListener('click', makeQR);
-    
-    ['input','keyup'].forEach(evt => {
-      elText.addEventListener(evt, debounce(makeQR, 300));
-    });
-    
+    ['input','keyup'].forEach(evt => { elText.addEventListener(evt, debounce(makeQR, 300)); });
     [elSize, elMargin, elLevel, elFG].forEach(el => el.addEventListener('change', makeQR));
-    
-    btnClear.addEventListener('click', () => { 
-      elQR.innerHTML = '';
-      elText.value = '';
-    });
-    
+    btnClear.addEventListener('click', () => { elQR.innerHTML = ''; elText.value = ''; });
     btnDownload.addEventListener('click', () => {
       const url = dataURLFromCurrent();
-      if (!url) {
-        alert('Please generate a QR code first.');
-        return;
-      }
+      if (!url) { alert('Please generate a QR code first.'); return; }
       const a = document.createElement('a');
-      a.href = url; 
-      a.download = 'qrcode.png';
-      document.body.appendChild(a); 
-      a.click(); 
-      document.body.removeChild(a);
+      a.href = url; a.download = 'qrcode.png';
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
     });
-    
     btnCopy.addEventListener('click', async () => {
       const url = dataURLFromCurrent();
-      if (!url) {
-        alert('Please generate a QR code first.');
-        return;
-      }
-      
+      if (!url) { alert('Please generate a QR code first.'); return; }
       try {
         const blob = await (await fetch(url)).blob();
         await navigator.clipboard.write([new ClipboardItem({ [blob.type]: blob })]);
-        
         const originalText = btnCopy.innerHTML;
-        btnCopy.innerHTML = `
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="20,6 9,17 4,12"/>
-          </svg>
-          Copied
-        `;
+        btnCopy.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20,6 9,17 4,12"/></svg>Copied';
         btnCopy.classList.add('text-success');
-        
-        setTimeout(() => {
-          btnCopy.innerHTML = originalText;
-          btnCopy.classList.remove('text-success');
-        }, 2000);
-      } catch (e) {
-        alert('Clipboard access blocked. Please use the download option instead.');
-      }
+        setTimeout(() => { btnCopy.innerHTML = originalText; btnCopy.classList.remove('text-success'); }, 2000);
+      } catch (e) { alert('Clipboard access blocked. Please use the download option instead.'); }
     });
-    
-    chips.forEach(c => c.addEventListener('click', () => {
-      elText.value = c.dataset.paste || '';
-      makeQR();
-    }));
+    chips.forEach(c => c.addEventListener('click', () => { elText.value = c.dataset.paste || ''; makeQR(); }));
 
-    function debounce(fn, ms=250) {
-      let t; 
-      return (...args) => { 
-        clearTimeout(t); 
-        t = setTimeout(() => fn.apply(this, args), ms); 
-      };
-    }
+    printSize.addEventListener('input', (e) => setPrintSize(e.target.value));
+    printButton.addEventListener('click', () => {
+      // Ensure a QR exists before printing
+      if (!elQR.querySelector('canvas') && !elQR.querySelector('img')) { makeQR(); }
+      window.print();
+    });
+
+    function debounce(fn, ms=250) { let t; return (...args) => { clearTimeout(t); t = setTimeout(() => fn.apply(this, args), ms); }; }
 
     // Initial render
     makeQR();
